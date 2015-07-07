@@ -108,7 +108,7 @@ TemperatureMap.prototype.getPointValue = function (point) {
     var counter = 0,
         tmp = 0.0,
         dst = [],
-        inv = [],
+        inv = 0.0,
         t = 0.0,
         b = 0.0,
         pwr = 2;
@@ -121,9 +121,9 @@ TemperatureMap.prototype.getPointValue = function (point) {
             if (dst[counter] === 0) {
                 return this.points[counter].value;
             } else {
-                inv[counter] = 1 / Math.pow(dst[counter], pwr);
-                t = t + (inv[counter] * this.points[counter].value);
-                b = b + inv[counter];
+                inv = 1 / Math.pow(dst[counter], pwr);
+                t = t + inv * this.points[counter].value;
+                b = b + inv;
             }
         }
         return t / b;
