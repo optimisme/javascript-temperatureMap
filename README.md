@@ -1,5 +1,5 @@
 # Temperature Map
-Library to draw temperature maps (heat maps) using Canvas/Javascript. Drawing does not block the main process using 'requestAnimationFrame'
+Library to draw temperature maps (heat maps) using Canvas/Javascript. Drawing shows an animation and does not block the main process.
 
 ### Run
 
