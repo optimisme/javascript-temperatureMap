@@ -21,8 +21,8 @@ temperatureMap.js contains the libary source
     ctx0 = can0.getContext("2d");           // Get the canvas context
     drw0 = new TemperatureMap(ctx0);        // Create the object 
 
-    drw0.setRandomPoints(25, width, height);// Assign rando points
-                                            // Or assign points with drw0.setPoints(arr, width, height
+    drw0.setRandomPoints(25, width, height);// Assign random points
+    // Or assign points with drw0.setPoints(arr, width, height);
 
     // To draw the fast map
     drw0.drawLow(function () {              // Draw 'low' resolution image
