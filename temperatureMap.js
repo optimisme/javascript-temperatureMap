@@ -211,7 +211,7 @@ TemperatureMap.prototype.setRandomPoints = function (points, width, height) {
     this.setPoints(rst, width, height);
 };
 
-TemperatureMap.prototype.drawLow = function (levels, callback) {
+TemperatureMap.prototype.drawLow = function (callback) {
     'use strict';
     var self = this,
         ctx = this.ctx,
@@ -233,7 +233,7 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
                 for (cnt = 0; cnt < 50; cnt = cnt + 1) {
                     val = self.getPointValue({ x: x, y: y });
                     if (val !== -255) {
-                        col = self.getColor(levels, val);
+                        col = self.getColor(false, val);
                         str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
                         gradient = ctx.createRadialGradient(x, y, 1, x, y, res);
                         gradient.addColorStop(0, str + '0.5)');
