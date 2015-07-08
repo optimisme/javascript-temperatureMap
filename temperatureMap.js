@@ -6,6 +6,12 @@ var TemperatureMap = function (ctx) {
     this.ctx = ctx;
     this.points = [];
     this.polygon = [];
+    this.limits = {
+        xMin: 0,
+        xMax: 0,
+        yMin: 0,
+        yMax: 0
+    };
 };
 
 TemperatureMap.crossProduct = function (o, a, b) {
@@ -137,11 +143,24 @@ TemperatureMap.prototype.setConvexhullPolygon = function (points) {
     var lower = [],
         upper = [],
         i = 0;
+    
+    // Sort by 'y' to get yMin/yMax
+    points.sort(function (a, b) {
+        return a.y === b.y ? a.x - b.x : a.y - b.y;
+    });
+    
+    this.limits.yMin = points[0].y;
+    this.limits.yMax = points[points.length - 1].y;
 
+    // Sort by 'x' to get convex hull polygon and xMin/xMax
     points.sort(function (a, b) {
         return a.x === b.x ? a.y - b.y : a.x - b.x;
     });
-
+    
+    this.limits.xMin = points[0].x;
+    this.limits.xMax = points[points.length - 1].x;
+    
+    // Get convex hull polygon from points sorted by 'x'
     for (i = 0; i < points.length; i = i + 1) {
         while (lower.length >= 2 && TemperatureMap.crossProduct(lower[lower.length - 2], lower[lower.length - 1], points[i]) <= 0) {
             lower.pop();
@@ -197,7 +216,7 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
     var self = this,
         ctx = this.ctx,
         PI2 = 2 * Math.PI,
-        status = { x: 0, y: 0 },
+        status = { x: this.limits.xMin, y: this.limits.yMin },
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
                 var col = [],
@@ -225,33 +244,34 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
                         ctx.fill();
                     }
                     x = x + res;
-                    if (x >= self.width) {
-                        x = 0;
+                    if (x >= self.limits.xMax) {
+                        x = self.limits.xMin;
                         y = y + res;
                     }
                 }
 
                 status.x = x;
                 status.y = y;
-                
-                // Erase polygon outsides
-                if (self.polygon.length > 1) {
-                    ctx.globalCompositeOperation = 'destination-in';
-                    ctx.fillStyle = 'rgb(255, 255, 255)';
-                    ctx.beginPath();
-                    ctx.moveTo(self.polygon[0].x, self.polygon[0].y);
-                    for (cnt = 1; cnt < self.polygon.length; cnt = cnt + 1) {
-                        ctx.lineTo(self.polygon[cnt].x, self.polygon[cnt].y);
-                    }
-                    ctx.lineTo(self.polygon[0].x, self.polygon[0].y);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.globalCompositeOperation = 'source-over';
-                }
 
-                if (y < self.height) {
+                if (y < self.limits.yMax) {
                     recursive();
                 } else if (typeof callback === 'function') {
+                    
+                    // Erase polygon outsides
+                    if (self.polygon.length > 1) {
+                        ctx.globalCompositeOperation = 'destination-in';
+                        ctx.fillStyle = 'rgb(255, 255, 255)';
+                        ctx.beginPath();
+                        ctx.moveTo(self.polygon[0].x, self.polygon[0].y);
+                        for (cnt = 1; cnt < self.polygon.length; cnt = cnt + 1) {
+                            ctx.lineTo(self.polygon[cnt].x, self.polygon[cnt].y);
+                        }
+                        ctx.lineTo(self.polygon[0].x, self.polygon[0].y);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.globalCompositeOperation = 'source-over';
+                    }
+                    
                     callback();
                 }
             });
@@ -265,7 +285,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
     var self = this,
         ctx = this.ctx,
         img = this.ctx.getImageData(0, 0, self.width, self.height),
-        status = { x: 0, y: 0, step: 0 },
+        status = { x: this.limits.xMin, y: this.limits.yMin, step: 0 },
         steps = 3,
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
@@ -297,8 +317,8 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                         img.data[idx + 3] = 0;
                     }
                     x = x + 1;
-                    if (x >= self.width) {
-                        x = 0;
+                    if (x >= self.limits.xMax) {
+                        x = self.limits.xMin;
                         y = y + steps;
                     }
                 }
@@ -307,11 +327,11 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                 status.x = x;
                 status.y = y;
 
-                if (y < self.height) {
+                if (y < self.limits.yMax) {
                     recursive();
                 } else if (status.step !== steps) {
                     status.step = status.step + 1;
-                    status.y = status.step;
+                    status.y = self.limits.yMin + status.step;
                     recursive();
                 } else if (typeof callback === 'function') {
                     callback();
