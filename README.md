@@ -25,7 +25,7 @@ Animation showing a random temperature map with:
 
 ### Example 1
 
-Animation showing a temperature map using the previous points:
+Animation showing a temperature map using previous points:
 
 - High resolution (slow map)
 - Colors by gradients
@@ -34,7 +34,7 @@ Animation showing a temperature map using the previous points:
 
 ### Example 2
 
-Animation showing a temperature map using the previous points:
+Animation showing a temperature map using previous points:
 
 - High resolution (slow map)
 - Colors by levels
