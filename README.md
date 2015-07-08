@@ -33,7 +33,7 @@ drw0.drawLow(function () {
 // To draw the full map with levels
 drw0.drawFull(true, function () { /* Do nothing when done */ });
 
-// To draw the full map without levels
+// To draw the full map with gradients
 drw0.drawFull(false, function () { /* Do nothing when done */ });
 ```
 
