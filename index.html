@@ -19,9 +19,7 @@
                 can2 = document.getElementById("cns2"),
                 ctx2 = can2.getContext("2d"),
                 drw2 = new TemperatureMap(ctx2),
-                can3 = document.getElementById("cns3"),
-                ctx3 = can3.getContext("2d"),
-                drw3 = new TemperatureMap(ctx3);
+                can3 = document.getElementById("cns3");
 
 
             // drawLow, drawFull, drawTexture:
@@ -31,19 +29,14 @@
 
             drw0.setRandomPoints(25, width, height);
             drw0.drawLow(false, function () {
-                drw0.drawFull(true, function () {
-                    drw0.drawPoints();
-                });
+                drw0.drawPoints();
             });
 
             drw1.setPoints(drw0.points, width, height);
-            drw1.drawLow(false, function () { drw1.drawPoints(); });
+            drw1.drawFull(false, function () { drw1.drawPoints(); });
 
             drw2.setPoints(drw0.points, width, height);
             drw2.drawFull(true, function () { drw2.drawPoints(); });
-
-            drw3.setPoints(drw0.points, width, height);
-            drw3.drawFull(false, function () { drw3.drawPoints(); });
         }
         </script>
     </head>
@@ -51,10 +44,8 @@
         <img src='./map.png' style='position: absolute; top:    0px; left:    0px; z-index: -10'/>
         <img src='./map.png' style='position: absolute; top:    0px; left:  500px; z-index: -10'/>
         <img src='./map.png' style='position: absolute; top:  500px; left:    0px; z-index: -10'/>
-        <img src='./map.png' style='position: absolute; top:  500px; left:  500px; z-index: -10'/>
         <canvas id='cns0' width='500' height='500' style="position: absolute; top:    0px; left:    0px; height: 500px; width: 500px;"></canvas>
         <canvas id='cns1' width='500' height='500' style="position: absolute; top:    0px; left:  500px; height: 500px; width: 500px;"></canvas>
         <canvas id='cns2' width='500' height='500' style="position: absolute; top:  500px; left:    0px; height: 500px; width: 500px;"></canvas>
-        <canvas id='cns3' width='500' height='500' style="position: absolute; top:  500px; left:  500px; height: 500px; width: 500px;"></canvas>
     </body>
 </html>
