@@ -17,23 +17,25 @@ temperatureMap.js contains the libary source
 
 ### Using the library
 
-    can0 = document.getElementById("cns0"); // Get the canvas object
-    ctx0 = can0.getContext("2d");           // Get the canvas context
-    drw0 = new TemperatureMap(ctx0);        // Create the object 
+```js
+can0 = document.getElementById("cns0"); // Get the canvas object
+ctx0 = can0.getContext("2d");           // Get the canvas context
+drw0 = new TemperatureMap(ctx0);        // Create the object 
 
-    drw0.setRandomPoints(25, width, height);// Assign random points
-    // Or assign points with drw0.setPoints(arr, width, height);
+drw0.setRandomPoints(25, width, height);// Assign random points
+// Or assign points with drw0.setPoints(arr, width, height);
 
-    // To draw the fast map
-    drw0.drawLow(function () {
-        drw0.drawPoints();                  // Draw points when done
-    });
+// To draw the fast map
+drw0.drawLow(function () {
+    drw0.drawPoints();                  // Draw points when done
+});
 
-    // To draw the full map with levels
-    drw0.drawFull(true, function () { /* Do nothing when done */ });
+// To draw the full map with levels
+drw0.drawFull(true, function () { /* Do nothing when done */ });
 
-    // To draw the full map without levels
-    drw0.drawFull(false, function () { /* Do nothing when done */ });
+// To draw the full map without levels
+drw0.drawFull(false, function () { /* Do nothing when done */ });
+```
 
 ### Example 0
 
