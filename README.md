@@ -27,7 +27,7 @@ Animation showing a random temperature map with:
 
 Animation showing a temperature map using previous points:
 
-- High resolution (slow map)
+- Full resolution (slow map)
 - Colors by gradients
 
 ![eg1](https://raw.github.com/optimisme/javascript-temperatureMap/master/captures/eg1.png)
@@ -36,7 +36,7 @@ Animation showing a temperature map using previous points:
 
 Animation showing a temperature map using previous points:
 
-- High resolution (slow map)
+- Full resolution (slow map)
 - Colors by levels
 
 ![eg2](https://raw.github.com/optimisme/javascript-temperatureMap/master/captures/eg2.png)
