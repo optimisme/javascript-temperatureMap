@@ -25,15 +25,15 @@ temperatureMap.js contains the libary source
     // Or assign points with drw0.setPoints(arr, width, height);
 
     // To draw the fast map
-    drw0.drawLow(function () {              // Draw 'low' resolution image
+    drw0.drawLow(function () {
         drw0.drawPoints();                  // Draw points when done
     });
 
     // To draw the full map with levels
-    drw1.drawFull(true, function () { /* Do nothing when done */ });
+    drw0.drawFull(true, function () { /* Do nothing when done */ });
 
     // To draw the full map without levels
-    drw1.drawFull(false, function () { /* Do nothing when done */ });
+    drw0.drawFull(false, function () { /* Do nothing when done */ });
 
 ### Example 0
 
