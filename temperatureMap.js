@@ -198,7 +198,6 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
         ctx = this.ctx,
         PI2 = 2 * Math.PI,
         status = { x: 0, y: 0 },
-        now = new Date(),
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
                 var col = [],
@@ -238,7 +237,6 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
                 if (y < self.height) {
                     recursive();
                 } else if (typeof callback === 'function') {
-                    console.log(new Date() - now);
                     callback();
                 }
             });
