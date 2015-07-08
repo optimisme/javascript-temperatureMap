@@ -325,12 +325,13 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
 
                 ctx.putImageData(img, 0, 0);
                 status.x = x;
-                status.y = y;
 
                 if (y <= self.limits.yMax) {
+                    status.y = y;
                     recursive();
                 } else if (status.step !== (steps - 1)) {
                     status.step = status.step + 1;
+                    status.x = self.limits.xMin;
                     status.y = self.limits.yMin + status.step;
                     recursive();
                 } else if (typeof callback === 'function') {
