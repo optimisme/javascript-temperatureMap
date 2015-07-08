@@ -211,7 +211,7 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
 
                 x = status.x;
                 y = status.y;
-                for (cnt = 0; cnt < 100; cnt = cnt + 1) {
+                for (cnt = 0; cnt < 50; cnt = cnt + 1) {
                     val = self.getPointValue({ x: x, y: y });
                     if (val !== -255) {
                         col = self.getColor(levels, val);
@@ -233,6 +233,21 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
 
                 status.x = x;
                 status.y = y;
+                
+                // Erase polygon outsides
+                if (self.polygon.length > 1) {
+                    ctx.globalCompositeOperation = 'destination-in';
+                    ctx.fillStyle = 'rgb(255, 255, 255)';
+                    ctx.beginPath();
+                    ctx.moveTo(self.polygon[0].x, self.polygon[0].y);
+                    for (cnt = 1; cnt < self.polygon.length; cnt = cnt + 1) {
+                        ctx.lineTo(self.polygon[cnt].x, self.polygon[cnt].y);
+                    }
+                    ctx.lineTo(self.polygon[0].x, self.polygon[0].y);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.globalCompositeOperation = 'source-over';
+                }
 
                 if (y < self.height) {
                     recursive();
@@ -251,7 +266,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         ctx = this.ctx,
         img = this.ctx.getImageData(0, 0, self.width, self.height),
         status = { x: 0, y: 0, step: 0 },
-        steps = 5,
+        steps = 3,
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
                 var col = [],
