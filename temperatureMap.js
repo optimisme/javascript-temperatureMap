@@ -198,62 +198,37 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
         ctx = this.ctx,
         PI2 = 2 * Math.PI,
         status = { x: 0, y: 0 },
+        now = new Date(),
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
                 var col = [],
+                    res = 8,
                     cnt = 0,
                     x = 0,
                     y = 0,
                     val = 0.0,
-                    str = '';
+                    str = '',
+                    gradient;
 
                 x = status.x;
                 y = status.y;
-                for (cnt = 0; cnt < 50; cnt = cnt + 1) {
+                for (cnt = 0; cnt < 100; cnt = cnt + 1) {
                     val = self.getPointValue({ x: x, y: y });
                     if (val !== -255) {
                         col = self.getColor(levels, val);
-
-                        str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', 0.5)';
-                        ctx.strokeStyle = str;
-                        ctx.lineWidth =  0.4;
+                        str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
+                        gradient = ctx.createRadialGradient(x, y, 1, x, y, res);
+                        gradient.addColorStop(0, str + '0.5)');
+                        gradient.addColorStop(1, str + '0)');
+                        ctx.fillStyle = gradient;
                         ctx.beginPath();
-                        ctx.arc(x, y, 9, 0, PI2, false);
-                        ctx.stroke();
-
-                        str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', 0.6)';
-                        ctx.strokeStyle = str;
-                        ctx.lineWidth =  0.4;
-                        ctx.beginPath();
-                        ctx.arc(x, y, 7, 0, PI2, false);
-                        ctx.stroke();
-
-                        str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', 0.7)';
-                        ctx.strokeStyle = str;
-                        ctx.lineWidth =  0.5;
-                        ctx.beginPath();
-                        ctx.arc(x, y, 5, 0, PI2, false);
-                        ctx.stroke();
-
-                        str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', 0.8)';
-                        ctx.strokeStyle = str;
-                        ctx.lineWidth =  0.5;
-                        ctx.beginPath();
-                        ctx.arc(x, y, 3, 0, PI2, false);
-                        ctx.stroke();
-
-                        str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', 0.6)';
-                        ctx.strokeStyle = str;
-                        ctx.lineWidth =  0.5;
-                        ctx.beginPath();
-                        ctx.arc(x, y, 1, 0, PI2, false);
-                        ctx.stroke();
-
+                        ctx.arc(x, y, res, 0, PI2, false);
+                        ctx.fill();
                     }
-                    x = x + 10;
+                    x = x + res;
                     if (x >= self.width) {
                         x = 0;
-                        y = y + 10;
+                        y = y + res;
                     }
                 }
 
@@ -263,6 +238,7 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
                 if (y < self.height) {
                     recursive();
                 } else if (typeof callback === 'function') {
+                    console.log(new Date() - now);
                     callback();
                 }
             });
