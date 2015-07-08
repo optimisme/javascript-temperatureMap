@@ -253,7 +253,7 @@ TemperatureMap.prototype.drawLow = function (levels, callback) {
                 status.x = x;
                 status.y = y;
 
-                if (y < self.limits.yMax) {
+                if (y <= self.limits.yMax) {
                     recursive();
                 } else if (typeof callback === 'function') {
                     
@@ -327,9 +327,9 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                 status.x = x;
                 status.y = y;
 
-                if (y < self.limits.yMax) {
+                if (y <= self.limits.yMax) {
                     recursive();
-                } else if (status.step !== steps) {
+                } else if (status.step !== (steps - 1)) {
                     status.step = status.step + 1;
                     status.y = self.limits.yMin + status.step;
                     recursive();
