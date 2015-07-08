@@ -250,7 +250,8 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
     var self = this,
         ctx = this.ctx,
         img = this.ctx.getImageData(0, 0, self.width, self.height),
-        status = { x: 0, y: 0, type: 'even' },
+        status = { x: 0, y: 0, step: 0 },
+        steps = 5,
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
                 var col = [],
@@ -283,7 +284,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                     x = x + 1;
                     if (x >= self.width) {
                         x = 0;
-                        y = y + 2;
+                        y = y + steps;
                     }
                 }
 
@@ -293,9 +294,9 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
 
                 if (y < self.height) {
                     recursive();
-                } else if (status.type === 'even') {
-                    status.type = 'odd';
-                    status.y = 1;
+                } else if (status.step !== steps) {
+                    status.step = status.step + 1;
+                    status.y = status.step;
                     recursive();
                 } else if (typeof callback === 'function') {
                     callback();
