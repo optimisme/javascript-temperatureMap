@@ -113,7 +113,7 @@ TemperatureMap.prototype.getPointValue = function (limit, point) {
     'use strict';
     var counter = 0,
         tmp = 0.0,
-        dst = [],
+        arr = [],
         inv = 0.0,
         t = 0.0,
         b = 0.0,
@@ -128,19 +128,19 @@ TemperatureMap.prototype.getPointValue = function (limit, point) {
 
     if (TemperatureMap.pointInPolygon(point, this.polygon)) {
         for (counter = 0; counter < this.points.length; counter = counter + 1) {
-            dst[counter] = {
+            arr[counter] = {
                 distance: TemperatureMap.squareDistance(point, this.points[counter]),
                 point: point,
                 position: counter
             };
         }
 
-        dst.sort(function (a, b) {
+        arr.sort(function (a, b) {
             return a.distance === b.distance ? a.position - b.position : a.distance - b.distance;
         });
 
         for (counter = 0; counter < limit; counter = counter + 1) {
-            ptr = dst[counter];
+            ptr = arr[counter];
             if (ptr.distance === 0) {
                 return this.points[ptr.position].value;
             } else {
@@ -248,7 +248,8 @@ TemperatureMap.prototype.drawLow = function (limit, callback) {
 
                 x = status.x;
                 y = status.y;
-                for (cnt = 0; cnt < 1500; cnt = cnt + 1) {
+
+                for (cnt = 0; cnt < 750; cnt = cnt + 1) {
                     val = self.getPointValue(limit + 1, { x: x, y: y });
                     if (val !== -255) {
                         col = self.getColor(false, val);
