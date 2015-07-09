@@ -1,10 +1,6 @@
 # Temperature Map
 Library to draw temperature maps (heat maps) using Canvas/Javascript. Drawing shows an animation and does not block the main process.
 
-Values are calculated using 'Inverse Distance Weighting (IDW)' algorithm:
-
-https://en.wikipedia.org/wiki/Inverse_distance_weighting
-
 ### Run
 
 Download this project with:
@@ -30,7 +26,7 @@ drw0.setRandomPoints(25, width, height);// Assign random points
 // Or assign points with drw0.setPoints(arr, width, height);
 
 // To draw the fast map
-drw0.drawLow(function () {
+drw0.drawLow(5, function () {           // 5 = Number of closer influent points
     drw0.drawPoints();                  // Draw points when done
 });
 
