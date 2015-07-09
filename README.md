@@ -26,8 +26,10 @@ drw0.setRandomPoints(25, width, height);// Assign random points
 // Or assign points with drw0.setPoints(arr, width, height);
 
 // To draw the fast map
-drw0.drawLow(5, function () {           // 5 = Number of closer influent points
-    drw0.drawPoints();                  // Draw points when done
+drw0.drawLow(5, 8, false, function () { // 5 = Number of closer influent points
+                                        // 8 = Quality parameter [2, 32]
+                                        // false = clean polygon outside
+    drw0.drawPoints();                  // Callback function (draw points when done)
 });
 
 // To draw the full map with levels

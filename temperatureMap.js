@@ -230,7 +230,7 @@ TemperatureMap.prototype.setRandomPoints = function (points, width, height) {
     this.setPoints(rst, width, height);
 };
 
-TemperatureMap.prototype.drawLow = function (limit, callback) {
+TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
     'use strict';
     var self = this,
         ctx = this.ctx,
@@ -239,7 +239,6 @@ TemperatureMap.prototype.drawLow = function (limit, callback) {
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
                 var col = [],
-                    res = 8,
                     cnt = 0,
                     x = 0,
                     y = 0,
@@ -281,7 +280,7 @@ TemperatureMap.prototype.drawLow = function (limit, callback) {
                 } else if (typeof callback === 'function') {
                     
                     // Erase polygon outsides
-                    if (self.polygon.length > 1) {
+                    if (clean && self.polygon.length > 1) {
                         ctx.globalCompositeOperation = 'destination-in';
                         ctx.fillStyle = 'rgb(255, 255, 255)';
                         ctx.beginPath();
