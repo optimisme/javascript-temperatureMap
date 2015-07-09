@@ -21,14 +21,8 @@
                 drw2 = new TemperatureMap(ctx2),
                 can3 = document.getElementById("cns3");
 
-
-            // drawLow, drawFull, drawTexture:
-            // levels: true for level colors, false for gradient colors 
-            //         (only visible for drawFull)
-            // callback: function to call after drawing is done
-
             drw0.setRandomPoints(25, width, height);
-            drw0.drawLow(function () {
+            drw0.drawLow(5, function () {
                 drw0.drawPoints();
             });
 

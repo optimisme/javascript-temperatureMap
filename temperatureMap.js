@@ -109,7 +109,7 @@ TemperatureMap.prototype.getColor = function (levels, value) {
     return TemperatureMap.hslToRgb(tmp, 1, 0.5);
 };
 
-TemperatureMap.prototype.getPointValue = function (point) {
+TemperatureMap.prototype.getPointValue = function (limit, point) {
     'use strict';
     var counter = 0,
         tmp = 0.0,
@@ -117,21 +117,39 @@ TemperatureMap.prototype.getPointValue = function (point) {
         inv = 0.0,
         t = 0.0,
         b = 0.0,
-        pwr = 2;
+        pwr = 2,
+        ptr;
+
+    if (limit > this.points.length) {
+        limit = this.points.length;
+    }
 
     // From : https://en.wikipedia.org/wiki/Inverse_distance_weighting
 
     if (TemperatureMap.pointInPolygon(point, this.polygon)) {
         for (counter = 0; counter < this.points.length; counter = counter + 1) {
-            dst[counter] = TemperatureMap.squareDistance(point, this.points[counter]);
-            if (dst[counter] === 0) {
-                return this.points[counter].value;
+            dst[counter] = {
+                distance: TemperatureMap.squareDistance(point, this.points[counter]),
+                point: point,
+                position: counter
+            };
+        }
+
+        dst.sort(function (a, b) {
+            return a.distance === b.distance ? a.position - b.position : a.distance - b.distance;
+        });
+
+        for (counter = 0; counter < limit; counter = counter + 1) {
+            ptr = dst[counter];
+            if (ptr.distance === 0) {
+                return this.points[ptr.position].value;
             } else {
-                inv = 1 / Math.pow(dst[counter], pwr);
-                t = t + inv * this.points[counter].value;
+                inv = 1 / Math.pow(ptr.distance, pwr);
+                t = t + inv * this.points[ptr.position].value;
                 b = b + inv;
             }
         }
+
         return t / b;
     } else {
         return -255;
@@ -211,7 +229,7 @@ TemperatureMap.prototype.setRandomPoints = function (points, width, height) {
     this.setPoints(rst, width, height);
 };
 
-TemperatureMap.prototype.drawLow = function (callback) {
+TemperatureMap.prototype.drawLow = function (limit, callback) {
     'use strict';
     var self = this,
         ctx = this.ctx,
@@ -230,8 +248,8 @@ TemperatureMap.prototype.drawLow = function (callback) {
 
                 x = status.x;
                 y = status.y;
-                for (cnt = 0; cnt < 50; cnt = cnt + 1) {
-                    val = self.getPointValue({ x: x, y: y });
+                for (cnt = 0; cnt < 1500; cnt = cnt + 1) {
+                    val = self.getPointValue(limit, { x: x, y: y });
                     if (val !== -255) {
                         col = self.getColor(false, val);
                         str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
@@ -247,6 +265,9 @@ TemperatureMap.prototype.drawLow = function (callback) {
                     if (x >= self.limits.xMax) {
                         x = self.limits.xMin;
                         y = y + res;
+                        if (y >= self.limits.yMax) {
+                            break;
+                        }
                     }
                 }
 
@@ -302,7 +323,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                 w = self.width * 4;
 
                 for (cnt = 0; cnt < 500; cnt = cnt + 1) {
-                    val = self.getPointValue({ x: x, y: y });
+                    val = self.getPointValue(self.points.length, { x: x, y: y });
                     idx = x * 4 + y * w;
                     if (val !== -255) {
                         col = self.getColor(levels, val);
