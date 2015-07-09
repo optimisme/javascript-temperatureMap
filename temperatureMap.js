@@ -127,6 +127,7 @@ TemperatureMap.prototype.getPointValue = function (limit, point) {
     // From : https://en.wikipedia.org/wiki/Inverse_distance_weighting
 
     if (TemperatureMap.pointInPolygon(point, this.polygon)) {
+
         for (counter = 0; counter < this.points.length; counter = counter + 1) {
             arr[counter] = {
                 distance: TemperatureMap.squareDistance(point, this.points[counter]),
