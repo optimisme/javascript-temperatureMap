@@ -249,7 +249,7 @@ TemperatureMap.prototype.drawLow = function (limit, callback) {
                 x = status.x;
                 y = status.y;
                 for (cnt = 0; cnt < 1500; cnt = cnt + 1) {
-                    val = self.getPointValue(limit, { x: x, y: y });
+                    val = self.getPointValue(limit + 1, { x: x, y: y });
                     if (val !== -255) {
                         col = self.getColor(false, val);
                         str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
