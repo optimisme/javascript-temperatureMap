@@ -137,7 +137,7 @@ TemperatureMap.prototype.getPointValue = function (limit, point) {
             if (dis === 0) {
                 return this.points[counter].value;
             }
-            arr[counter] = [dis, counter ];
+            arr[counter] = [dis, counter];
         }
 
         arr.sort(function (a, b) { return a[0] - b[0]; });
