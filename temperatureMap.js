@@ -300,12 +300,12 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         val = 0.0,
         tBeg = 0,
         tDif = 0,
-        bucle = 100.0,
+        bucleSteps = 100.0,
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
 
                 tBeg = (new Date()).getTime();
-                for (cnt = 0; cnt < bucle; cnt = cnt + 1) {
+                for (cnt = 0; cnt < bucleSteps; cnt = cnt + 1) {
                     val = self.getPointValue(self.points.length, { x: x, y: y });
                     idx = x * 4 + wy;
                     if (val !== -255) {
@@ -327,7 +327,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                 if (tDif === 0) {
                     tDif = 1;
                 }
-                bucle = ((16 * bucle) / tDif) * 0.8;
+                bucleSteps = ((16 * bucleSteps) / tDif) * 0.8;
 
                 ctx.putImageData(img, 0, 0);
 
