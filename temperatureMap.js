@@ -242,14 +242,16 @@ TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
             y = 0,
             val = 0.0,
             str = '',
+            xBeg = self.limits.xMin,
+            yBeg = self.limits.yMin,
             xEnd = self.limits.xMax,
             yEnd = self.limits.yMax,
             lim = limit > self.points.length ? self.points.length : limit + 1,
             gradient;
 
         // Draw aproximation
-        for (x = self.limits.xMin; x < xEnd; x = x + res) {
-            for (y = self.limits.yMin; y < yEnd; y =  y + res) {
+        for (x = xBeg; x < xEnd; x = x + res) {
+            for (y = yBeg; y < yEnd; y =  y + res) {
                 val = self.getPointValue(lim, { x: x, y: y });
                 if (val !== -255) {
                     col = self.getColor(false, val);
@@ -302,6 +304,9 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         val = 0.0,
         tBeg = 0,
         tDif = 0,
+        xBeg = self.limits.xMin,
+        xEnd = self.limits.xMax,
+        yEnd = self.limits.yMax,
         bucleSteps = 100.0,
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
@@ -318,8 +323,8 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                         data[idx + 3] = 128;
                     }
                     x = x + 1;
-                    if (x > self.limits.xMax) {
-                        x = self.limits.xMin;
+                    if (x > xEnd) {
+                        x = xBeg;
                         y = y + 1;
                         wy = w * y;
                     }
@@ -334,10 +339,8 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
 
                 ctx.putImageData(img, 0, 0);
 
-                if (y < self.limits.yMax) {
-
+                if (y < yEnd) {
                     recursive();
-
                 } else if (typeof callback === 'function') {
                     callback();
                 }
