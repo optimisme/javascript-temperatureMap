@@ -162,12 +162,12 @@ TemperatureMap.prototype.setConvexhullPolygon = function (points) {
     var lower = [],
         upper = [],
         i = 0;
-    
+
     // Sort by 'y' to get yMin/yMax
     points.sort(function (a, b) {
         return a.y === b.y ? a.x - b.x : a.y - b.y;
     });
-    
+
     this.limits.yMin = points[0].y;
     this.limits.yMax = points[points.length - 1].y;
 
@@ -175,10 +175,10 @@ TemperatureMap.prototype.setConvexhullPolygon = function (points) {
     points.sort(function (a, b) {
         return a.x === b.x ? a.y - b.y : a.x - b.x;
     });
-    
+
     this.limits.xMin = points[0].x;
     this.limits.xMax = points[points.length - 1].x;
-    
+
     // Get convex hull polygon from points sorted by 'x'
     for (i = 0; i < points.length; i = i + 1) {
         while (lower.length >= 2 && TemperatureMap.crossProduct(lower[lower.length - 2], lower[lower.length - 1], points[i]) <= 0) {
@@ -234,72 +234,51 @@ TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
     'use strict';
     var self = this,
         ctx = this.ctx,
-        PI2 = 2 * Math.PI,
-        status = { x: this.limits.xMin, y: this.limits.yMin },
-        recursive = function () {
-            window.requestAnimationFrame(function (timestamp) {
-                var col = [],
-                    cnt = 0,
-                    x = 0,
-                    y = 0,
-                    val = 0.0,
-                    str = '',
-                    gradient;
+        dbl = 2 * res,
+        status = { x: this.limits.xMin, y: this.limits.yMin };
 
-                x = status.x;
-                y = status.y;
+    window.requestAnimationFrame(function (timestamp) {
+        var col = [],
+            cnt = 0,
+            x = 0,
+            y = 0,
+            val = 0.0,
+            str = '',
+            gradient;
 
-                for (cnt = 0; cnt < 750; cnt = cnt + 1) {
-                    val = self.getPointValue(limit + 1, { x: x, y: y });
-                    if (val !== -255) {
-                        col = self.getColor(false, val);
-                        str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
-                        gradient = ctx.createRadialGradient(x, y, 1, x, y, res);
-                        gradient.addColorStop(0, str + '0.5)');
-                        gradient.addColorStop(1, str + '0)');
-                        ctx.fillStyle = gradient;
-                        ctx.beginPath();
-                        ctx.arc(x, y, res, 0, PI2, false);
-                        ctx.fill();
-                    }
-                    x = x + res;
-                    if (x >= self.limits.xMax) {
-                        x = self.limits.xMin;
-                        y = y + res;
-                        if (y >= self.limits.yMax) {
-                            break;
-                        }
-                    }
+        // Draw aproximation
+        for (x = self.limits.xMin; x < self.limits.xMax; x = x + res) {
+            for (y = self.limits.yMin; y < self.limits.yMax; y =  y + res) {
+                val = self.getPointValue(limit + 1, { x: x, y: y });
+                if (val !== -255) {
+                    col = self.getColor(false, val);
+                    str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
+                    gradient = ctx.createRadialGradient(x, y, 1, x, y, res);
+                    gradient.addColorStop(0, str + '0.5)');
+                    gradient.addColorStop(1, str + '0)');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x - res, y - res, dbl, dbl);
                 }
+            }
+        }
 
-                status.x = x;
-                status.y = y;
+        // Erase polygon outsides
+        if (clean && self.polygon.length > 1) {
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.fillStyle = 'rgb(255, 255, 255)';
+            ctx.beginPath();
+            ctx.moveTo(self.polygon[0].x, self.polygon[0].y);
+            for (cnt = 1; cnt < self.polygon.length; cnt = cnt + 1) {
+                ctx.lineTo(self.polygon[cnt].x, self.polygon[cnt].y);
+            }
+            ctx.lineTo(self.polygon[0].x, self.polygon[0].y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+        }
 
-                if (y <= self.limits.yMax) {
-                    recursive();
-                } else if (typeof callback === 'function') {
-                    
-                    // Erase polygon outsides
-                    if (clean && self.polygon.length > 1) {
-                        ctx.globalCompositeOperation = 'destination-in';
-                        ctx.fillStyle = 'rgb(255, 255, 255)';
-                        ctx.beginPath();
-                        ctx.moveTo(self.polygon[0].x, self.polygon[0].y);
-                        for (cnt = 1; cnt < self.polygon.length; cnt = cnt + 1) {
-                            ctx.lineTo(self.polygon[cnt].x, self.polygon[cnt].y);
-                        }
-                        ctx.lineTo(self.polygon[0].x, self.polygon[0].y);
-                        ctx.closePath();
-                        ctx.fill();
-                        ctx.globalCompositeOperation = 'source-over';
-                    }
-                    
-                    callback();
-                }
-            });
-        };
-
-    recursive();
+        callback();
+    });
 };
 
 TemperatureMap.prototype.drawFull = function (levels, callback) {
