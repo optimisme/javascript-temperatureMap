@@ -295,7 +295,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
 
-                for (cnt = 0; cnt < 1000; cnt = cnt + 1) {
+                for (cnt = 0; cnt < 1500; cnt = cnt + 1) {
                     val = self.getPointValue(self.points.length, { x: x, y: y });
                     idx = x * 4 + wy;
                     if (val !== -255) {
