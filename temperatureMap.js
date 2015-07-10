@@ -112,46 +112,38 @@ TemperatureMap.prototype.getColor = function (levels, value) {
 TemperatureMap.prototype.getPointValue = function (limit, point) {
     'use strict';
     var counter = 0,
-        tmp = 0.0,
         arr = [],
+        tmp = 0.0,
+        dis = 0.0,
         inv = 0.0,
         t = 0.0,
         b = 0.0,
         pwr = 2,
         ptr;
 
-    if (limit > this.points.length) {
-        limit = this.points.length;
-    }
-
     // From : https://en.wikipedia.org/wiki/Inverse_distance_weighting
 
     if (TemperatureMap.pointInPolygon(point, this.polygon)) {
 
         for (counter = 0; counter < this.points.length; counter = counter + 1) {
-            arr[counter] = {
-                distance: TemperatureMap.squareDistance(point, this.points[counter]),
-                point: point,
-                position: counter
-            };
+            dis = TemperatureMap.squareDistance(point, this.points[counter]);
+            if (dis === 0) {
+                return this.points[counter].value;
+            }
+            arr[counter] = [dis, counter ];
         }
 
-        arr.sort(function (a, b) {
-            return a.distance === b.distance ? a.position - b.position : a.distance - b.distance;
-        });
+        arr.sort(function (a, b) { return a[0] - b[0]; });
 
         for (counter = 0; counter < limit; counter = counter + 1) {
             ptr = arr[counter];
-            if (ptr.distance === 0) {
-                return this.points[ptr.position].value;
-            } else {
-                inv = 1 / Math.pow(ptr.distance, pwr);
-                t = t + inv * this.points[ptr.position].value;
-                b = b + inv;
-            }
+            inv = 1 / Math.pow(ptr[0], pwr);
+            t = t + inv * this.points[ptr[1]].value;
+            b = b + inv;
         }
 
         return t / b;
+
     } else {
         return -255;
     }
@@ -234,7 +226,8 @@ TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
     'use strict';
     var self = this,
         ctx = this.ctx,
-        dbl = 2 * res;
+        dbl = 2 * res,
+        status = { x: this.limits.xMin, y: this.limits.yMin };
 
     window.requestAnimationFrame(function (timestamp) {
         var col = [],
@@ -243,12 +236,15 @@ TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
             y = 0,
             val = 0.0,
             str = '',
+            xEnd = self.limits.xMax,
+            yEnd = self.limits.yMax,
+            lim = limit > self.points.length ? self.points.length : limit + 1,
             gradient;
 
         // Draw aproximation
-        for (x = self.limits.xMin; x < self.limits.xMax; x = x + res) {
-            for (y = self.limits.yMin; y < self.limits.yMax; y =  y + res) {
-                val = self.getPointValue(limit + 1, { x: x, y: y });
+        for (x = self.limits.xMin; x < xEnd; x = x + res) {
+            for (y = self.limits.yMin; y < yEnd; y =  y + res) {
+                val = self.getPointValue(lim, { x: x, y: y });
                 if (val !== -255) {
                     col = self.getColor(false, val);
                     str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
