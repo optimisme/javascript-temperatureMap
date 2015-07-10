@@ -289,6 +289,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
     var self = this,
         ctx = this.ctx,
         img = this.ctx.getImageData(0, 0, self.width, self.height),
+        data = img.data,
         step = 0,
         col = [],
         cnt = 0,
@@ -310,10 +311,10 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                     idx = x * 4 + wy;
                     if (val !== -255) {
                         col = self.getColor(levels, val);
-                        img.data[idx] = col[0];
-                        img.data[idx + 1] = col[1];
-                        img.data[idx + 2] = col[2];
-                        img.data[idx + 3] = 128;
+                        data[idx] = col[0];
+                        data[idx + 1] = col[1];
+                        data[idx + 2] = col[2];
+                        data[idx + 3] = 128;
                     }
                     x = x + 1;
                     if (x > self.limits.xMax) {
