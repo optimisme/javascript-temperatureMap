@@ -63,12 +63,21 @@ TemperatureMap.hslToRgb = function (h, s, l) {
         r = g = b = l;
     } else {
         hue2rgb = function hue2rgb(p, q, t) {
-            if (t < 0) { t += 1; }
-            if (t > 1) { t -= 1; }
-            if (t < 0.33) { return p + (q - p) * 6 * t; }
-            if (t < 0.50) { return q; }
-            if (t < 0.66) { return p + (q - p) * (0.66 - t) * 6; }
-            return p;
+            if (t < 0) {
+                t += 1;
+            } else if (t > 1) {
+                t -= 1;
+            }
+
+            if (t >= 0.66) {
+                return p;
+            } else if (t >= 0.5) {
+                return p + (q - p) * (0.66 - t) * 6;
+            } else if (t >= 0.33) {
+                return q;
+            } else {
+                return p + (q - p) * 6 * t;
+            }
         };
 
         q = l < 0.5 ? l * (1 + s) : l + s - l * s;
@@ -293,7 +302,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
 
-                for (cnt = 0; cnt < 1500; cnt = cnt + 1) {
+                for (cnt = 0; cnt < 2000; cnt = cnt + 1) {
                     val = self.getPointValue(self.points.length, { x: x, y: y });
                     idx = x * 4 + wy;
                     if (val !== -255) {
