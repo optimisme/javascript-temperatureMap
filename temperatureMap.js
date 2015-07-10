@@ -329,7 +329,8 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                 if (tDif === 0) {
                     tDif = 1;
                 }
-                bucleSteps = ((16 * bucleSteps) / tDif) * 0.5;
+                // bucleSteps = ((16 * bucleSteps) / tDif) * 0.5;
+                bucleSteps = (bucleSteps << 3) / tDif;
 
                 ctx.putImageData(img, 0, 0);
 
