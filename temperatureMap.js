@@ -290,7 +290,6 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         ctx = this.ctx,
         img = this.ctx.getImageData(0, 0, self.width, self.height),
         step = 0,
-        steps = 3,
         col = [],
         cnt = 0,
         idx = 0,
@@ -299,10 +298,14 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         w = self.width * 4,
         wy = w * y,
         val = 0.0,
+        tBeg = 0,
+        tDif = 0,
+        bucle = 500.0,
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
 
-                for (cnt = 0; cnt < 2000; cnt = cnt + 1) {
+                tBeg = (new Date()).getTime();
+                for (cnt = 0; cnt < bucle; cnt = cnt + 1) {
                     val = self.getPointValue(self.points.length, { x: x, y: y });
                     idx = x * 4 + wy;
                     if (val !== -255) {
@@ -315,23 +318,21 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
                     x = x + 1;
                     if (x > self.limits.xMax) {
                         x = self.limits.xMin;
-                        y = y + steps;
+                        y = y + 1;
                         wy = w * y;
                     }
                 }
+
+                tDif = (new Date()).getTime() - tBeg;
+                if (tDif === 0) {
+                    tDif = 1;
+                }
+                bucle = ((16 * bucle) / tDif) * 0.8;
 
                 ctx.putImageData(img, 0, 0);
 
                 if (y < self.limits.yMax) {
 
-                    recursive();
-
-                } else if (step !== (steps - 1)) {
-
-                    step = step + 1;
-                    x = self.limits.xMin;
-                    y = self.limits.yMin + step;
-                    wy = w * y;
                     recursive();
 
                 } else if (typeof callback === 'function') {
