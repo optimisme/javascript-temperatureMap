@@ -271,7 +271,9 @@ TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
             ctx.globalCompositeOperation = 'source-over';
         }
 
-        callback();
+        if (typeof callback === 'function') {
+            callback();
+        }
     });
 };
 
