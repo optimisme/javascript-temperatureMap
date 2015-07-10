@@ -67,20 +67,20 @@ TemperatureMap.hslToRgb = function (h, s, l) {
         hue2rgb = function hue2rgb(p, q, t) {
             if (t < 0) { t += 1; }
             if (t > 1) { t -= 1; }
-            if (t < 1 / 6) { return p + (q - p) * 6 * t; }
-            if (t < 1 / 2) { return q; }
-            if (t < 2 / 3) { return p + (q - p) * (2 / 3 - t) * 6; }
+            if (t < 0.33) { return p + (q - p) * 6 * t; }
+            if (t < 0.50) { return q; }
+            if (t < 0.66) { return p + (q - p) * (0.66 - t) * 6; }
             return p;
         };
 
         q = l < 0.5 ? l * (1 + s) : l + s - l * s;
         p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1 / 3);
+        r = hue2rgb(p, q, h + 0.33);
         g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
+        b = hue2rgb(p, q, h - 0.33);
     }
 
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    return [(r * 255) | 0, (g * 255) | 0, (b * 255) | 0]; // (x << 0) = Math.floor(x)
 };
 
 TemperatureMap.prototype.getColor = function (levels, value) {
