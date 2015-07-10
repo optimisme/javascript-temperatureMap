@@ -234,8 +234,7 @@ TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
     'use strict';
     var self = this,
         ctx = this.ctx,
-        dbl = 2 * res,
-        status = { x: this.limits.xMin, y: this.limits.yMin };
+        dbl = 2 * res;
 
     window.requestAnimationFrame(function (timestamp) {
         var col = [],
