@@ -300,7 +300,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         val = 0.0,
         tBeg = 0,
         tDif = 0,
-        bucle = 500.0,
+        bucle = 100.0,
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
 
