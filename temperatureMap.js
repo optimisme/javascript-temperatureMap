@@ -298,6 +298,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
         y = self.limits.yMin,
         w = self.width * 4,
         wy = w * y,
+        lim = self.points.length,
         val = 0.0,
         tBeg = 0,
         tDif = 0,
@@ -307,7 +308,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
 
                 tBeg = (new Date()).getTime();
                 for (cnt = 0; cnt < bucleSteps; cnt = cnt + 1) {
-                    val = self.getPointValue(self.points.length, { x: x, y: y });
+                    val = self.getPointValue(lim, { x: x, y: y });
                     idx = x * 4 + wy;
                     if (val !== -255) {
                         col = self.getColor(levels, val);
