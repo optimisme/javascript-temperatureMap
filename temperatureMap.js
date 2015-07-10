@@ -226,8 +226,7 @@ TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
     'use strict';
     var self = this,
         ctx = this.ctx,
-        dbl = 2 * res,
-        status = { x: this.limits.xMin, y: this.limits.yMin };
+        dbl = 2 * res;
 
     window.requestAnimationFrame(function (timestamp) {
         var col = [],
@@ -281,55 +280,51 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
     var self = this,
         ctx = this.ctx,
         img = this.ctx.getImageData(0, 0, self.width, self.height),
-        status = { x: this.limits.xMin, y: this.limits.yMin, step: 0 },
+        step = 0,
         steps = 3,
+        col = [],
+        cnt = 0,
+        idx = 0,
+        x = self.limits.xMin,
+        y = self.limits.yMin,
+        w = self.width * 4,
+        wy = w * y,
+        val = 0.0,
         recursive = function () {
             window.requestAnimationFrame(function (timestamp) {
-                var col = [],
-                    cnt = 0,
-                    idx = 0,
-                    x = 0,
-                    y = 0,
-                    w = 0,
-                    val = 0.0;
 
-                x = status.x;
-                y = status.y;
-                w = self.width * 4;
-
-                for (cnt = 0; cnt < 500; cnt = cnt + 1) {
+                for (cnt = 0; cnt < 1000; cnt = cnt + 1) {
                     val = self.getPointValue(self.points.length, { x: x, y: y });
-                    idx = x * 4 + y * w;
+                    idx = x * 4 + wy;
                     if (val !== -255) {
                         col = self.getColor(levels, val);
                         img.data[idx] = col[0];
                         img.data[idx + 1] = col[1];
                         img.data[idx + 2] = col[2];
                         img.data[idx + 3] = 128;
-                    } else {
-                        img.data[idx] = 0;
-                        img.data[idx + 1] = 0;
-                        img.data[idx + 2] = 0;
-                        img.data[idx + 3] = 0;
                     }
                     x = x + 1;
-                    if (x >= self.limits.xMax) {
+                    if (x > self.limits.xMax) {
                         x = self.limits.xMin;
                         y = y + steps;
+                        wy = w * y;
                     }
                 }
 
                 ctx.putImageData(img, 0, 0);
-                status.x = x;
 
-                if (y <= self.limits.yMax) {
-                    status.y = y;
+                if (y < self.limits.yMax) {
+
                     recursive();
-                } else if (status.step !== (steps - 1)) {
-                    status.step = status.step + 1;
-                    status.x = self.limits.xMin;
-                    status.y = self.limits.yMin + status.step;
+
+                } else if (step !== (steps - 1)) {
+
+                    step = step + 1;
+                    x = self.limits.xMin;
+                    y = self.limits.yMin + step;
+                    wy = w * y;
                     recursive();
+
                 } else if (typeof callback === 'function') {
                     callback();
                 }
