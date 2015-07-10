@@ -51,8 +51,8 @@ TemperatureMap.pointInPolygon = function (point, vs) {
 
 TemperatureMap.squareDistance = function (p0, p1) {
     'use strict';
-    var x = Math.abs(p0.x - p1.x),
-        y = Math.abs(p0.y - p1.y);
+    var x = p0.x - p1.x,
+        y = p0.y - p1.y;
 
     return x * x + y * y;
 };
