@@ -1,8 +1,7 @@
-/*global console*/
-/*jslint bitwise: true */
+'use strict';
 
 var TemperatureMap = function (ctx) {
-    'use strict';
+
     this.ctx = ctx;
     this.points = [];
     this.polygon = [];
@@ -12,15 +11,15 @@ var TemperatureMap = function (ctx) {
         yMin: 0,
         yMax: 0
     };
+    this.size = { height: ctx.canvas.height, width: ctx.canvas.width }
 };
 
 TemperatureMap.crossProduct = function (o, a, b) {
-    'use strict';
     return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
 };
 
 TemperatureMap.pointInPolygon = function (point, vs) {
-    'use strict';
+
     var x = point.x,
         y = point.y,
         inside = false,
@@ -48,7 +47,7 @@ TemperatureMap.pointInPolygon = function (point, vs) {
 };
 
 TemperatureMap.squareDistance = function (p0, p1) {
-    'use strict';
+
     var x = p0.x - p1.x,
         y = p0.y - p1.y;
 
@@ -56,7 +55,7 @@ TemperatureMap.squareDistance = function (p0, p1) {
 };
 
 TemperatureMap.hslToRgb = function (h, s, l) {
-    'use strict';
+
     var r, g, b, hue2rgb, q, p;
 
     if (s === 0) {
@@ -91,7 +90,7 @@ TemperatureMap.hslToRgb = function (h, s, l) {
 };
 
 TemperatureMap.prototype.getColor = function (levels, value) {
-    'use strict';
+
     var val = value,
         tmp = 0,
         lim = 0.55,
@@ -117,7 +116,7 @@ TemperatureMap.prototype.getColor = function (levels, value) {
 };
 
 TemperatureMap.prototype.getPointValue = function (limit, point) {
-    'use strict';
+
     var counter = 0,
         arr = [],
         tmp = 0.0,
@@ -157,7 +156,7 @@ TemperatureMap.prototype.getPointValue = function (limit, point) {
 };
 
 TemperatureMap.prototype.setConvexhullPolygon = function (points) {
-    'use strict';
+
     var lower = [],
         upper = [],
         i = 0;
@@ -199,7 +198,7 @@ TemperatureMap.prototype.setConvexhullPolygon = function (points) {
 };
 
 TemperatureMap.prototype.setPoints = function (arr, width, height) {
-    'use strict';
+
     this.points = arr;
     this.width = width;
     this.height = height;
@@ -207,7 +206,7 @@ TemperatureMap.prototype.setPoints = function (arr, width, height) {
 };
 
 TemperatureMap.prototype.setRandomPoints = function (points, width, height) {
-    'use strict';
+
     var counter = 0,
         x = 0,
         y = 0,
@@ -230,60 +229,59 @@ TemperatureMap.prototype.setRandomPoints = function (points, width, height) {
 };
 
 TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
-    'use strict';
+
     var self = this,
         ctx = this.ctx,
-        dbl = 2 * res;
+        dbl = 2 * res,
+        col = [],
+        cnt = 0,
+        x = 0,
+        y = 0,
+        val = 0.0,
+        str = '',
+        xBeg = self.limits.xMin,
+        yBeg = self.limits.yMin,
+        xEnd = self.limits.xMax,
+        yEnd = self.limits.yMax,
+        lim = limit > self.points.length ? self.points.length : limit + 1,
+        gradient;
 
-    window.requestAnimationFrame(function (timestamp) {
-        var col = [],
-            cnt = 0,
-            x = 0,
-            y = 0,
-            val = 0.0,
-            str = '',
-            xBeg = self.limits.xMin,
-            yBeg = self.limits.yMin,
-            xEnd = self.limits.xMax,
-            yEnd = self.limits.yMax,
-            lim = limit > self.points.length ? self.points.length : limit + 1,
-            gradient;
+    ctx.clearRect(0, 0, this.size.width, this.size.height)
 
-        // Draw aproximation
-        for (x = xBeg; x < xEnd; x = x + res) {
-            for (y = yBeg; y < yEnd; y =  y + res) {
-                val = self.getPointValue(lim, { x: x, y: y });
-                if (val !== -255) {
-                    col = self.getColor(false, val);
-                    str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
-                    gradient = ctx.createRadialGradient(x, y, 1, x, y, res);
-                    gradient.addColorStop(0, str + '0.5)');
-                    gradient.addColorStop(1, str + '0)');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(x - res, y - res, dbl, dbl);
-                }
+    // Draw aproximation
+    for (x = xBeg; x < xEnd; x = x + res) {
+        for (y = yBeg; y < yEnd; y =  y + res) {
+            val = self.getPointValue(lim, { x: x, y: y });
+            if (val !== -255) {
+                col = self.getColor(false, val);
+                str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
+                gradient = ctx.createRadialGradient(x, y, 1, x, y, res);
+                gradient.addColorStop(0, str + '0.5)');
+                gradient.addColorStop(1, str + '0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x - res, y - res, dbl, dbl);
             }
         }
+    }
 
-        // Erase polygon outsides
-        if (clean && self.polygon.length > 1) {
-            ctx.globalCompositeOperation = 'destination-in';
-            ctx.fillStyle = 'rgb(255, 255, 255)';
-            ctx.beginPath();
-            ctx.moveTo(self.polygon[0].x, self.polygon[0].y);
-            for (cnt = 1; cnt < self.polygon.length; cnt = cnt + 1) {
-                ctx.lineTo(self.polygon[cnt].x, self.polygon[cnt].y);
-            }
-            ctx.lineTo(self.polygon[0].x, self.polygon[0].y);
-            ctx.closePath();
-            ctx.fill();
-            ctx.globalCompositeOperation = 'source-over';
+    // Erase polygon outsides
+    if (clean && self.polygon.length > 1) {
+        ctx.globalCompositeOperation = 'destination-in';
+        ctx.fillStyle = 'rgb(255, 255, 255)';
+        ctx.beginPath();
+        ctx.moveTo(self.polygon[0].x, self.polygon[0].y);
+        for (cnt = 1; cnt < self.polygon.length; cnt = cnt + 1) {
+            ctx.lineTo(self.polygon[cnt].x, self.polygon[cnt].y);
         }
+        ctx.lineTo(self.polygon[0].x, self.polygon[0].y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+    }
 
-        if (typeof callback === 'function') {
-            callback();
-        }
-    });
+    if (typeof callback === 'function') {
+        callback();
+    }
 };
 
 TemperatureMap.prototype.drawFull = function (levels, callback) {
@@ -351,7 +349,7 @@ TemperatureMap.prototype.drawFull = function (levels, callback) {
 };
 
 TemperatureMap.prototype.drawPoints = function (callback) {
-    'use strict';
+
     var self = this,
         PI2 = 2 * Math.PI,
         ctx = this.ctx;
