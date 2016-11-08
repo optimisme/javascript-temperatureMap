@@ -27,7 +27,15 @@ ctx0 = can0.getContext("2d");           // Get the canvas context
 drw0 = new TemperatureMap(ctx0);        // Create the object 
 
 drw0.setRandomPoints(25, width, height);// Assign random points
-// Or assign points with drw0.setPoints(arr, width, height);
+// Or assign points:
+//
+// drw0.setPoints(arr, width, height);
+//
+// Where
+// arr = [{"x": x_position_canvas, "y": y_position_canvas, "value": number_value}, ...]
+// e.g.:
+// arr = [{"x":0,"y":276,"value":44.069984449424034},{"x":205,"y":321,"value":-34.75260914710751},{"x":41,"y":472,"value":-31.44969276634333}];
+
 
 // To draw the fast map
 drw0.drawLow(5, 8, false, function () { // 5 = Number of closer influent points
