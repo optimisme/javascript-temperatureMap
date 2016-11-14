@@ -246,20 +246,25 @@ TemperatureMap.prototype.drawLow = function (limit, res, clean, callback) {
         lim = limit > self.points.length ? self.points.length : limit + 1,
         gradient;
 
-    ctx.clearRect(0, 0, this.size.width, this.size.height)
+    ctx.clearRect(0, 0, this.size.width, this.size.height);
+    ctx.width += 0;   //<=== Resizing the canvas will cause the canvas to get cleared.
 
     // Draw aproximation
     for (x = xBeg; x < xEnd; x = x + res) {
-        for (y = yBeg; y < yEnd; y =  y + res) {
+        for (y = yBeg; y < yEnd; y = y + res) {
             val = self.getPointValue(lim, { x: x, y: y });
             if (val !== -255) {
+                ctx.beginPath();  //<== beginpath
                 col = self.getColor(false, val);
                 str = 'rgba(' + col[0] + ', ' + col[1] + ', ' + col[2] + ', ';
                 gradient = ctx.createRadialGradient(x, y, 1, x, y, res);
                 gradient.addColorStop(0, str + '0.5)');
                 gradient.addColorStop(1, str + '0)');
+                ctx.fillStyle = "#191919"; //<=== must be filled white for properly render
                 ctx.fillStyle = gradient;
                 ctx.fillRect(x - res, y - res, dbl, dbl);
+                ctx.fill();
+                ctx.closePath(); //<== must be closed
             }
         }
     }
